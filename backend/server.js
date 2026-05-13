@@ -1,20 +1,54 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const { connectDB } = require('./config/db');
 const leadsRoutes = require('./routes/leads');
-
+const authRoutes = require('./routes/auth');
 const app = express();
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5500')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-// Connect to PostgreSQL
+function isOriginAllowed(origin) {
+  if (!origin) return true; // same-origin / file:// / curl
+  if (allowedOrigins.includes(origin)) return true;
+  // In development, allow any localhost/127.0.0.1 port
+  if (process.env.NODE_ENV !== 'production') {
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  }
+  return false;
+}
+
+// Connect to SQLite
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin(origin, callback) {
+      if (isOriginAllowed(origin)) {
+        return callback(null, true);
+      }
+      console.warn(`CORS blocked origin: ${origin}`);
+      return callback(null, false);
+    },
+  })
+);
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadsRoutes);
 
 // Health check endpoint

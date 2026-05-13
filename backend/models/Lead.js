@@ -38,7 +38,18 @@ const Lead = sequelize.define(
       },
     },
     selectedCourse: {
-      type: DataTypes.ENUM('Mechanical CAD', 'Civil Engineering', 'IT & Software', 'Interior Design'),
+      type: DataTypes.ENUM(
+        'Mechanical CAD',
+        'Civil Engineering',
+        'IT & Software',
+        'Interior Design',
+        'Electrical CAD',
+        'Digital Marketing',
+        'Cyber Security',
+        'AI & ML',
+        'Data Science',
+        'Cloud & DevOps'
+      ),
       allowNull: false,
       validate: {
         notEmpty: {

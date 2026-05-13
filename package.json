@@ -1,0 +1,14 @@
+{
+  "name": "edu-cadd",
+  "version": "1.0.0",
+  "description": "EduCadd - Educational Institute Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "cd backend && npm install && npm start",
+    "dev": "cd backend && npm run dev",
+    "build": "cd backend && npm install"
+  },
+  "keywords": ["education", "management", "cadd"],
+  "author": "",
+  "license": "MIT"
+}

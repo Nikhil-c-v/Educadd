@@ -1,0 +1,5 @@
+[build]
+providers = ["nodejs"]
+
+[build.variables]
+NODE_ENV = "production"

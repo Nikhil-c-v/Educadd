@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-const PRIMARY_CONTACT_EMAIL = process.env.PRIMARY_CONTACT_EMAIL || 'mk.consultants13@gmail.com';
+const PRIMARY_CONTACT_EMAIL = process.env.PRIMARY_CONTACT_EMAIL || 'ideatek06@gmail.com';
 
 let transporter;
 

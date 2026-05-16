@@ -1,15 +1,15 @@
 {
-  "outputDirectory": "frontend",
+  "version": 2,
   "builds": [
-    {
-      "src": "frontend/**",
-      "use": "@vercel/static"
-    }
+    { "src": "frontend/**", "use": "@vercel/static" }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
-    }
+    { "src": "/admin", "dest": "/frontend/admin.html" },
+    { "src": "/sitemap.xml", "dest": "/frontend/sitemap.xml" },
+    { "src": "/robots.txt", "dest": "/frontend/robots.txt" },
+    { "src": "/site-config.js", "dest": "/frontend/site-config.js" },
+    { "src": "/(.*\\.(png|jpg|svg|ico|css|js|xml|txt))", "dest": "/frontend/$1" },
+    { "src": "/(.*\\.html)", "dest": "/frontend/$1" },
+    { "src": "/(.*)", "dest": "/frontend/index.html" }
   ]
 }

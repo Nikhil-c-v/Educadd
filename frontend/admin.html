@@ -77,10 +77,11 @@
 
   <script>
     const _host = window.location.hostname;
-    const API_URL = window.EDUCADD_API_URL ||
-      (['localhost', '127.0.0.1', ''].includes(_host) || _host === 'null'
-        ? 'http://localhost:5000'
-        : window.location.origin);
+    const API_URL =
+  window.EDUCADD_API_URL ||
+  (['localhost', '127.0.0.1', ''].includes(_host) || _host === 'null'
+    ? 'http://localhost:5000'
+    : window.location.origin);
     const ACCESS_TOKEN_KEY = 'educadd_admin_access_token';
     const ADMIN_USER_KEY = 'educadd_admin_user';
 

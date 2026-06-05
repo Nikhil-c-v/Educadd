@@ -1,101 +1,72 @@
-# EduCadd Backend - SQLite
+# EduCadd Backend - PostgreSQL
 
-Node.js + Express backend for the EduCadd website using SQLite database.
+Node.js + Express backend for the EduCadd website using PostgreSQL with Sequelize.
 
-## Setup
+## Local Setup
 
-1. **Install dependencies:**
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-2. **Copy `.env.example` to `.env`:**
+2. Copy environment file:
    ```bash
    cp .env.example .env
    ```
 
-3. **Update `.env` values:**
-   ```
-   SQLITE_STORAGE=./data/educadd.sqlite
-   FRONTEND_URL=http://localhost:5500,https://yourdomain.com,https://www.yourdomain.com
-   NODE_ENV=production
-   PRIMARY_CONTACT_EMAIL=mk.consultants13@gmail.com
-   SMTP_HOST=smtp.gmail.com
-   SMTP_PORT=587
-   SMTP_SECURE=false
-   SMTP_USER=your_gmail@gmail.com
-   SMTP_PASS=your_gmail_app_password
-   SMTP_FROM=your_gmail@gmail.com
-   ```
+3. Update `.env` values:
+   - `DATABASE_URL`
+   - `JWT_SECRET`
+   - `JWT_REFRESH_SECRET`
+   - `FRONTEND_URL`
+   - SMTP values if notifications are enabled
 
-4. **Run the server:**
+4. Start server:
    ```bash
    npm start
    ```
 
-The server will run on `http://localhost:5000` by default.
+Server runs at `http://localhost:5000` by default.
 
-For local development, the frontend uses `http://localhost:5000` automatically. For production with frontend on GoDaddy and a separate backend host, set `FRONTEND_URL` to your GoDaddy domain.
+## Vercel Deployment (Serverless)
 
-## Deployment
+This repo includes `backend/api/index.js` as the Vercel serverless entrypoint and root `vercel.json` routes `/api/*` to it.
 
-### Frontend on GoDaddy
+Required Vercel environment variables:
+- `DATABASE_URL`
+- `NODE_ENV=production`
+- `JWT_SECRET`
+- `JWT_REFRESH_SECRET`
+- `JWT_EXPIRES_IN=7d`
+- `JWT_REFRESH_EXPIRES_IN=30d`
+- `ADMIN_EMAIL`
+- `ADMIN_PASSWORD`
+- `ADMIN_FULL_NAME` (optional)
+- `ADMIN_PASSWORD_RESET=false` (set `true` only when you want to rotate admin password)
+- `FRONTEND_URL`
+- `FRONTEND_URL_REGEX` (optional, for preview domains)
+- `DB_SYNC=false` (recommended in production)
+- `PRIMARY_CONTACT_EMAIL`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `SMTP_FROM`
 
-1. Upload the root frontend files to GoDaddy.
-2. Edit `site-config.js` and set `window.EDUCADD_API_URL` to your deployed backend URL.
-3. Make sure your GoDaddy domain matches one of the URLs listed in `FRONTEND_URL` on the backend.
-
-### Backend Hosting
-
-1. Deploy the `backend` folder to your preferred Node.js hosting provider.
-2. Set these environment variables in your hosting environment:
-   - `SQLITE_STORAGE` = `./data/educadd.sqlite`
-   - `FRONTEND_URL` = `https://yourdomain.com,https://www.yourdomain.com`
-   - `JWT_SECRET`
-   - `JWT_REFRESH_SECRET`
-   - `PRIMARY_CONTACT_EMAIL`
-   - `SMTP_HOST`
-   - `SMTP_PORT`
-   - `SMTP_SECURE`
-   - `SMTP_USER`
-   - `SMTP_PASS`
-   - `SMTP_FROM`
-3. Start command: `npm start`
+Example CORS values for Vercel:
+- `FRONTEND_URL=https://your-project.vercel.app,https://www.yourdomain.com,https://yourdomain.com`
+- `FRONTEND_URL_REGEX=^https://your-project(-[a-z0-9-]+)?\.vercel\.app$`
 
 ## API Endpoints
 
 - `GET /api/health` - Health check
-- `POST /api/leads` - Create new lead
-- `GET /api/leads` - Get all leads
-- `GET /api/leads/:id` - Get lead by id
-- `PUT /api/leads/:id` - Update lead
-- `DELETE /api/leads/:id` - Delete lead
-- `GET /api/leads/filter/status/:status` - Filter leads by status
-- `GET /api/leads/filter/course/:course` - Filter leads by course
-
-## Database Schema
-
-The Lead table includes:
-- `id` - UUID primary key
-- `fullName` - String (required)
-- `phoneNumber` - String (required, 10 digits)
-- `email` - String (optional)
-- `selectedCourse` - Enum (required)
-- `status` - Enum (default: 'New')
-- `notes` - String (optional)
-- `createdAt` - Timestamp
-- `updatedAt` - Timestamp
-
-## Environment Variables
-
-- `PORT` - Server port (default: 5000)
-- `SQLITE_STORAGE` - SQLite database file path (default: `./data/educadd.sqlite`)
-- `FRONTEND_URL` - Allowed frontend origins, comma-separated
-- `NODE_ENV` - Environment (development/production)
-- `PRIMARY_CONTACT_EMAIL` - Inbox that receives new lead and registration notifications
-- `SMTP_HOST` - SMTP server host
-- `SMTP_PORT` - SMTP server port
-- `SMTP_SECURE` - `true` for SSL, otherwise `false`
-- `SMTP_USER` - SMTP login username
-- `SMTP_PASS` - SMTP login password or app password
-- `SMTP_FROM` - From address used for outgoing notification emails
+- `POST /api/leads` - Create lead
+- `GET /api/leads` - Get leads (admin)
+- `GET /api/leads/:id` - Get lead by id (admin)
+- `PUT /api/leads/:id` - Update lead (admin)
+- `DELETE /api/leads/:id` - Delete lead (admin)
+- `POST /api/auth/register` - Register
+- `POST /api/auth/login` - Login
+- `POST /api/auth/refresh-token` - Refresh access token
+- `POST /api/auth/logout` - Logout

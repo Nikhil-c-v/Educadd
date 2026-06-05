@@ -57,7 +57,7 @@ const generateToken = (user) => {
       role: user.role,
     },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE || '7d' }
+    { expiresIn: process.env.JWT_EXPIRES_IN || process.env.JWT_EXPIRE || '7d' }
   );
 };
 
@@ -70,7 +70,10 @@ const generateRefreshToken = (user) => {
       role: user.role,
     },
     process.env.JWT_REFRESH_SECRET,
-    { expiresIn: process.env.JWT_REFRESH_EXPIRE || '30d' }
+    {
+      expiresIn:
+        process.env.JWT_REFRESH_EXPIRES_IN || process.env.JWT_REFRESH_EXPIRE || '30d',
+    }
   );
 };
 

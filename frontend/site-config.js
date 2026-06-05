@@ -1,7 +1,8 @@
 // -------------------------------------------------------
 // LOCAL DEVELOPMENT: leave EDUCADD_API_URL as empty string.
-// PRODUCTION (GoDaddy): set this to your deployed backend URL.
-//   e.g. window.EDUCADD_API_URL = 'https://api.yourdomain.com';
+// PRODUCTION (same-domain Vercel): keep empty to use current origin.
+// PRODUCTION (separate backend host): set this to your backend URL.
+//   e.g. 'https://edu-cadd-backend.onrender.com'
 // -------------------------------------------------------
 (function resolveApiUrl() {
 	const staticValue = '';

@@ -66,11 +66,10 @@ router.post('/', leadsCreateLimiter, validate(createLeadSchema), async (req, res
     const { fullName, phoneNumber, email, selectedCourse } = req.body;
     const lead = await Lead.create({ fullName, phoneNumber, email, selectedCourse });
 
-    try {
-      await sendLeadNotification({ fullName, phoneNumber, email, selectedCourse });
-    } catch (mailError) {
-      console.error(`Lead notification email failed: ${mailError.message}`);
-    }
+    // Keep lead creation fast even when SMTP provider is slow/unavailable.
+    sendLeadNotification({ fullName, phoneNumber, email, selectedCourse }).catch((mailError) =>
+      console.error(`Lead notification email failed: ${mailError.message}`)
+    );
 
     // Sync to Google Sheets (non-blocking — failure won't affect the response)
     appendLeadToSheet(lead.toJSON()).catch((err) =>

@@ -9,6 +9,8 @@ const leadsRoutes = require('./routes/leads');
 const authRoutes = require('./routes/auth');
 
 const app = express();
+// Render runs behind a reverse proxy; trust first proxy for client IP/rate limiting.
+app.set('trust proxy', 1);
 const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5500')
   .split(',')
   .map((origin) => origin.trim())
@@ -41,8 +43,32 @@ function isOriginAllowed(origin) {
   return false;
 }
 
+// Health check should remain available even if DB is temporarily down.
+app.get('/api/health', async (req, res) => {
+  try {
+    await connectDB();
+    return res.status(200).json({
+      status: 'ok',
+      database: 'connected',
+      timestamp: new Date(),
+    });
+  } catch (error) {
+    return res.status(503).json({
+      status: 'degraded',
+      database: 'disconnected',
+      error: 'Database connection failed',
+      message: error.message,
+      timestamp: new Date(),
+    });
+  }
+});
+
 // Ensure database connection is established in both server and serverless runtimes.
 app.use(async (req, res, next) => {
+  if (req.path === '/api/health') {
+    return next();
+  }
+
   try {
     await connectDB();
     await bootstrapAdmin();
@@ -81,11 +107,6 @@ app.use(cookieParser());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadsRoutes);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'Server is running', timestamp: new Date() });
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {

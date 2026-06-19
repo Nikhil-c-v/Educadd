@@ -30,7 +30,27 @@ function isConfigured() {
 }
 
 function getAuthClient() {
-  const privateKey = (process.env.GOOGLE_PRIVATE_KEY || '').replace(/\\n/g, '\n');
+  let privateKey = (process.env.GOOGLE_PRIVATE_KEY || '').trim();
+
+  if (
+    (privateKey.startsWith('"') && privateKey.endsWith('"')) ||
+    (privateKey.startsWith("'") && privateKey.endsWith("'"))
+  ) {
+    privateKey = privateKey.slice(1, -1);
+  }
+
+  privateKey = privateKey.replace(/\\n/g, '\n');
+
+  if (!privateKey.includes('BEGIN PRIVATE KEY')) {
+    try {
+      const decoded = Buffer.from(privateKey, 'base64').toString('utf8');
+      if (decoded.includes('BEGIN PRIVATE KEY')) {
+        privateKey = decoded;
+      }
+    } catch (error) {
+      // Keep original key; auth failure will be logged by caller.
+    }
+  }
 
   return new google.auth.JWT({
     email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,

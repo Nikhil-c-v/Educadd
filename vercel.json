@@ -3,13 +3,10 @@
   "buildCommand": "node vercel-build.js",
   "routes": [
     { "src": "/api/(.*)", "dest": "/backend/api/index.js" },
-    { "src": "/", "dest": "/api/root.js" },
-    { "src": "/admin", "dest": "/frontend/admin.html", "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" } },
-    { "src": "/sitemap.xml", "dest": "/frontend/sitemap.xml" },
-    { "src": "/robots.txt", "dest": "/frontend/robots.txt" },
+    { "src": "/api-config.json", "dest": "/frontend/api-config.json", "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" } },
     { "src": "/site-config.js", "dest": "/frontend/site-config.js", "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" } },
-    { "src": "/(.*\\.(png|jpg|svg|ico|css|js|xml|txt))", "dest": "/frontend/$1" },
-    { "src": "/(.*\\.html)", "dest": "/frontend/$1", "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" } },
-    { "src": "/(.*)", "dest": "/frontend/index.html", "headers": { "Cache-Control": "no-cache, no-store, must-revalidate" } }
+    { "src": "/(.*\\.html)", "dest": "/frontend/$1" },
+    { "src": "/(.*\\.(png|jpg|svg|ico|css|xml|txt))", "dest": "/frontend/$1" },
+    { "src": "/(.*)", "dest": "/frontend/index.html" }
   ]
 }

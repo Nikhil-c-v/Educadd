@@ -9,6 +9,7 @@
 <meta name="author" content="EduCadd Nagarbhavi"/>
 <meta name="robots" content="index, follow"/>
 <link rel="canonical" href="https://educaddnagarbhavi.in/"/>
+<meta name="educadd-api-url" content="https://educadd-kqah.onrender.com"/>
 <!-- Open Graph (Facebook, WhatsApp, LinkedIn) -->
 <meta property="og:type" content="website"/>
 <meta property="og:url" content="https://educaddnagarbhavi.in/"/>
@@ -794,10 +795,9 @@
 
 <script>
 const _host = window.location.hostname;
-const API_URL = window.EDUCADD_API_URL ||
-  (['localhost', '127.0.0.1', ''].includes(_host) || _host === 'null'
-    ? 'http://localhost:5000'
-    : window.location.origin);
+const _isLocalHost = ['localhost', '127.0.0.1', ''].includes(_host) || _host === 'null';
+const API_URL = window.EDUCADD_API_URL || (_isLocalHost ? 'http://localhost:5000' : '');
+const API_CONFIG_ERROR = 'Backend is not configured. Set EDUCADD_API_URL in site-config.js or localStorage.';
 
 async function submitLeadForm(e) {
   e.preventDefault();
@@ -808,6 +808,12 @@ async function submitLeadForm(e) {
   const phoneNumber = document.getElementById('leadPhone').value.trim();
   const email = document.getElementById('leadEmail').value.trim();
   const selectedCourse = document.getElementById('leadCourse').value;
+
+  if (!API_URL) {
+    errorMsg.textContent = API_CONFIG_ERROR;
+    errorMsg.classList.remove('hidden');
+    return;
+  }
 
   btn.disabled = true;
   btn.textContent = 'Submitting...';
@@ -820,15 +826,26 @@ async function submitLeadForm(e) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ fullName, phoneNumber, email: email || undefined, selectedCourse }),
     });
-    const data = await res.json();
+    const rawBody = await res.text();
+    let data = {};
+
+    try {
+      data = rawBody ? JSON.parse(rawBody) : {};
+    } catch (parseError) {
+      data = {};
+    }
+
     if (res.ok) {
       successMsg.classList.remove('hidden');
       document.getElementById('heroLeadForm').reset();
     } else {
-      errorMsg.textContent = data.message || 'Something went wrong. Please try again.';
+      errorMsg.textContent =
+        data.message ||
+        data.error ||
+        `Request failed (${res.status}). Please try again.`;
       errorMsg.classList.remove('hidden');
     }
-  } catch {
+  } catch (error) {
     errorMsg.textContent = 'Unable to connect to server. Please try again later.';
     errorMsg.classList.remove('hidden');
   } finally {

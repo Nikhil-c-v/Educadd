@@ -5,7 +5,7 @@
 //   e.g. 'https://edu-cadd-backend.onrender.com'
 // -------------------------------------------------------
 (function resolveApiUrl() {
-	const staticValue = 'https://edu-cadd-backend.onrender.com';
+	const staticValue = 'https://educadd-kqah.onrender.com';
 	let storageValue = '';
 	const metaValue = document
 		.querySelector('meta[name="educadd-api-url"]')

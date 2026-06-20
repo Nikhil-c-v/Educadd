@@ -1,36 +1,34 @@
-import fs from 'fs';
-import path from 'path';
+// Vercel serverless function to serve index.html with injected API URL
+const fs = require('fs');
+const path = require('path');
 
-export default function handler(req, res) {
+module.exports = (req, res) => {
   try {
-    const indexPath = path.join(process.cwd(), 'frontend', 'index.html');
-    let html = fs.readFileSync(indexPath, 'utf8');
+    const filePath = path.join(process.cwd(), 'frontend', 'index.html');
+    let content = fs.readFileSync(filePath, 'utf8');
     
     const apiUrl = 'https://educadd-kqah.onrender.com';
     
-    // Ensure the meta tag with correct API URL is in the HTML
-    if (!html.includes(apiUrl)) {
-      // Replace any existing educadd-api-url meta tag or add a new one
-      if (html.includes('educadd-api-url')) {
-        html = html.replace(
-          /meta name="educadd-api-url"[^>]*content="[^"]*"/,
-          `meta name="educadd-api-url" content="${apiUrl}"`
-        );
-      } else {
-        // Add meta tag if it doesn't exist
-        html = html.replace(
-          '</head>',
-          `  <meta name="educadd-api-url" content="${apiUrl}"/>\n</head>`
-        );
-      }
+    // Force inject the API URL into the HTML
+    content = content.replace(
+      /meta name="educadd-api-url" content="[^"]*"/g,
+      `meta name="educadd-api-url" content="${apiUrl}"`
+    );
+    
+    // If meta tag doesn't exist, add it
+    if (!content.includes('educadd-api-url')) {
+      content = content.replace(
+        '<head>',
+        `<head>\n  <meta name="educadd-api-url" content="${apiUrl}"/>`
+      );
     }
     
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+    res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    res.status(200).send(html);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.setHeader('Expires', '-1');
+    res.status(200).send(content);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-}
+};

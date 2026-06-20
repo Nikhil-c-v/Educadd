@@ -3,7 +3,7 @@
 // PRODUCTION (same-domain Vercel): keep empty to use current origin.
 // PRODUCTION (separate backend host): set this to your backend URL.
 //   e.g. 'https://edu-cadd-backend.onrender.com'
-// Deploy version: 2026-06-20 15:50 UTC
+// Deployed: 2026-06-20T16:00Z with no-cache headers
 // -------------------------------------------------------
 (function resolveApiUrl() {
 	const staticValue = 'https://educadd-kqah.onrender.com';

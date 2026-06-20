@@ -5,7 +5,7 @@
 //   e.g. 'https://edu-cadd-backend.onrender.com'
 // -------------------------------------------------------
 (function resolveApiUrl() {
-	const staticValue = '';
+	const staticValue = 'https://edu-cadd-backend.onrender.com';
 	let storageValue = '';
 	const metaValue = document
 		.querySelector('meta[name="educadd-api-url"]')
@@ -18,5 +18,5 @@
 		storageValue = '';
 	}
 
-	window.EDUCADD_API_URL = staticValue || metaValue || storageValue;
+	window.EDUCADD_API_URL = metaValue || storageValue || staticValue;
 })();

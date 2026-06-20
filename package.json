@@ -1,6 +1,6 @@
 {
   "name": "edu-cadd",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "EduCadd - Educational Institute Management System",
   "main": "server.js",
   "scripts": {

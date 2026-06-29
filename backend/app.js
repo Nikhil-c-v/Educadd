@@ -66,8 +66,8 @@ app.get('/api/health', async (req, res) => {
 // Public config used by the frontend so it can discover the API base without a hardcoded URL.
 app.get('/api/config', (req, res) => {
   res.status(200).json({
-    apiBaseUrl: '',
-    backendUrl: process.env.BACKEND_URL || '',
+    apiBaseUrl: process.env.BACKEND_URL || 'https://educadd-kqah.onrender.com',
+    backendUrl: process.env.BACKEND_URL || 'https://educadd-kqah.onrender.com',
     status: 'ok',
   });
 });

@@ -5,6 +5,9 @@
 //   e.g. 'https://edu-cadd-backend.onrender.com'
 // -------------------------------------------------------
 (async function resolveApiUrl() {
+	const host = window.location.hostname;
+	const isLocalHost = ['localhost', '127.0.0.1', ''].includes(host) || host === 'null';
+	const fallbackApiBase = isLocalHost ? 'http://localhost:5000' : 'https://educadd-kqah.onrender.com';
 	let resolvedValue = '';
 	let storageValue = '';
 	const metaValue = document
@@ -19,15 +22,16 @@
 	}
 
 	try {
-		const response = await fetch('/api/config?t=' + Date.now(), { cache: 'no-store' });
+		const configUrl = `${fallbackApiBase}/api/config?t=${Date.now()}`;
+		const response = await fetch(configUrl, { cache: 'no-store' });
 		if (response.ok) {
 			const config = await response.json();
-			resolvedValue = config.apiBaseUrl || config.backendUrl || '';
+			resolvedValue = config.apiBaseUrl || config.backendUrl || fallbackApiBase;
 		}
 	} catch (error) {
-		resolvedValue = '';
+		resolvedValue = fallbackApiBase;
 	}
 
-	window.EDUCADD_API_URL = metaValue || storageValue || resolvedValue;
+	window.EDUCADD_API_URL = metaValue || storageValue || resolvedValue || fallbackApiBase;
 	console.log('[EDUCADD Config] API URL set to:', window.EDUCADD_API_URL);
 })();

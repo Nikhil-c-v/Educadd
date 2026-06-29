@@ -63,9 +63,18 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// Public config used by the frontend so it can discover the API base without a hardcoded URL.
+app.get('/api/config', (req, res) => {
+  res.status(200).json({
+    apiBaseUrl: '',
+    backendUrl: process.env.BACKEND_URL || '',
+    status: 'ok',
+  });
+});
+
 // Ensure database connection is established in both server and serverless runtimes.
 app.use(async (req, res, next) => {
-  if (req.path === '/api/health') {
+  if (req.path === '/api/health' || req.path === '/api/config') {
     return next();
   }
 

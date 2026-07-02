@@ -1,14 +1,16 @@
 const { Sequelize } = require('sequelize');
 
 const FALLBACK_DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/educadd';
+const databaseUrl = process.env.DATABASE_URL || FALLBACK_DATABASE_URL;
+const shouldUseSsl =
+  process.env.DB_SSL === 'true' ||
+  process.env.NODE_ENV === 'production' ||
+  /render\.com/i.test(databaseUrl);
 
-const sequelize = new Sequelize(process.env.DATABASE_URL || FALLBACK_DATABASE_URL, {
+const sequelize = new Sequelize(databaseUrl, {
   dialect: 'postgres',
   dialectOptions: {
-    ssl:
-      process.env.NODE_ENV === 'production'
-        ? { require: true, rejectUnauthorized: false }
-        : false,
+    ssl: shouldUseSsl ? { require: true, rejectUnauthorized: false } : false,
   },
   logging: false,
 });

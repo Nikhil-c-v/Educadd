@@ -11,9 +11,9 @@ const authRoutes = require('./routes/auth');
 const app = express();
 // Render runs behind a reverse proxy; trust first proxy for client IP/rate limiting.
 app.set('trust proxy', 1);
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5500')
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5500,https://*.vercel.app,https://*.vercel.dev')
   .split(',')
-  .map((origin) => origin.trim())
+  .map((origin) => origin.trim().toLowerCase())
   .filter(Boolean);
 
 const allowedOriginPatterns = (process.env.FRONTEND_URL_REGEX || '')
@@ -32,12 +32,20 @@ const allowedOriginPatterns = (process.env.FRONTEND_URL_REGEX || '')
 
 function isOriginAllowed(origin) {
   if (!origin) return true; // same-origin / file:// / curl
-  if (allowedOrigins.includes(origin)) return true;
-  if (allowedOriginPatterns.some((pattern) => pattern.test(origin))) return true;
 
-  // In development, allow any localhost/127.0.0.1 port
-  if (process.env.NODE_ENV !== 'production') {
-    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  const normalizedOrigin = origin.toLowerCase();
+  if (allowedOrigins.includes(normalizedOrigin)) return true;
+  if (allowedOriginPatterns.some((pattern) => pattern.test(normalizedOrigin))) return true;
+
+  // Allow local development origins.
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(normalizedOrigin)) return true;
+
+  // Allow common deployment hosts for the public frontend.
+  if (
+    /^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(vercel\.app|vercel\.dev|netlify\.app|github\.dev)(:\d+)?$/i.test(origin) ||
+    /^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.onrender\.com$/i.test(origin)
+  ) {
+    return true;
   }
 
   return false;
@@ -65,9 +73,12 @@ app.get('/api/health', async (req, res) => {
 
 // Public config used by the frontend so it can discover the API base without a hardcoded URL.
 app.get('/api/config', (req, res) => {
+  const requestOrigin = `${req.protocol}://${req.get('host')}`;
+  const backendUrl = process.env.BACKEND_URL || requestOrigin;
+
   res.status(200).json({
-    apiBaseUrl: process.env.BACKEND_URL || 'https://educadd-kqah.onrender.com',
-    backendUrl: process.env.BACKEND_URL || 'https://educadd-kqah.onrender.com',
+    apiBaseUrl: backendUrl,
+    backendUrl,
     status: 'ok',
   });
 });
@@ -95,6 +106,8 @@ app.use(async (req, res, next) => {
 app.use(
   cors({
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     origin(origin, callback) {
       if (isOriginAllowed(origin)) {
         return callback(null, true);

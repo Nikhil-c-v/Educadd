@@ -7,7 +7,7 @@
 (async function resolveApiUrl() {
 	const host = window.location.hostname;
 	const isLocalHost = ['localhost', '127.0.0.1', ''].includes(host) || host === 'null';
-	const fallbackApiBase = isLocalHost ? 'http://localhost:5000' : 'https://educadd-kqah.onrender.com';
+	const fallbackApiBase = isLocalHost ? 'http://localhost:5000' : window.location.origin;
 	let resolvedValue = '';
 	let storageValue = '';
 	const metaValue = document
@@ -32,6 +32,6 @@
 		resolvedValue = fallbackApiBase;
 	}
 
-	window.EDUCADD_API_URL = metaValue || storageValue || resolvedValue || fallbackApiBase;
+	window.EDUCADD_API_URL = metaValue || resolvedValue || storageValue || fallbackApiBase;
 	console.log('[EDUCADD Config] API URL set to:', window.EDUCADD_API_URL);
 })();

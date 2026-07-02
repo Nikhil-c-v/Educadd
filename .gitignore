@@ -140,6 +140,11 @@ vite.config.ts.timestamp-*
 
 # SQLite database files
 *.sqlite
+*.sqlite3
+backend/data/
+
+# SQLite database files
+*.sqlite
 *.sqlite-shm
 *.sqlite-wal
 backend/data/

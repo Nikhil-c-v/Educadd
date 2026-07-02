@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cd backend && npm install && npm start",
     "dev": "cd backend && npm run dev",
-    "build": "cd backend && npm install"
+    "build": "echo 'No build step required'"
   },
   "keywords": ["education", "management", "cadd"],
   "author": "",

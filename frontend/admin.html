@@ -78,7 +78,7 @@
   <script>
     const _host = window.location.hostname;
     const _isLocalHost = ['localhost', '127.0.0.1', ''].includes(_host) || _host === 'null';
-    const FALLBACK_API_URL = window.location.origin || 'https://educadd-kqah.onrender.com';
+    const FALLBACK_API_URL = 'https://educadd-kqah.onrender.com';
     const API_URL = window.EDUCADD_API_URL || (_isLocalHost ? 'http://localhost:5000' : FALLBACK_API_URL);
     const API_CONFIG_ERROR = 'Backend is not configured. Set EDUCADD_API_URL in site-config.js or localStorage.';
     const ACCESS_TOKEN_KEY = 'educadd_admin_access_token';

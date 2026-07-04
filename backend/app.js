@@ -11,7 +11,7 @@ const authRoutes = require('./routes/auth');
 const app = express();
 // Render runs behind a reverse proxy; trust first proxy for client IP/rate limiting.
 app.set('trust proxy', 1);
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5500,https://*.vercel.app,https://*.vercel.dev')
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5500,https://*.vercel.app,https://*.vercel.dev,https://edu-ui-eight.vercel.app,https://edu-r64p03qac-educadd-s-projects.vercel.app,https://educaddnagarbhavi.in,https://www.educaddnagarbhavi.in')
   .split(',')
   .map((origin) => origin.trim().toLowerCase())
   .filter(Boolean);

@@ -83,25 +83,6 @@ app.get('/api/config', (req, res) => {
   });
 });
 
-// Ensure database connection is established in both server and serverless runtimes.
-app.use(async (req, res, next) => {
-  if (req.path === '/api/health' || req.path === '/api/config') {
-    return next();
-  }
-
-  try {
-    await connectDB();
-    await bootstrapAdmin();
-    return next();
-  } catch (error) {
-    console.error(`Database connection failed: ${error.message}`);
-    return res.status(500).json({
-      error: 'Database connection failed',
-      message: 'Please try again shortly.',
-    });
-  }
-});
-
 // Middleware
 app.use(
   cors({
@@ -125,6 +106,25 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Ensure database connection is established in both server and serverless runtimes.
+app.use(async (req, res, next) => {
+  if (req.path === '/api/health' || req.path === '/api/config') {
+    return next();
+  }
+
+  try {
+    await connectDB();
+    await bootstrapAdmin();
+    return next();
+  } catch (error) {
+    console.error(`Database connection failed: ${error.message}`);
+    return res.status(500).json({
+      error: 'Database connection failed',
+      message: 'Please try again shortly.',
+    });
+  }
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
